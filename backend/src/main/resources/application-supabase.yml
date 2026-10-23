@@ -1,0 +1,38 @@
+spring:
+  cache:
+    type: ${CACHE_TYPE:simple}
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:smartcrm}
+    password: ${RABBITMQ_PASSWORD:smartcrm_password}
+  datasource:
+    # Supabase PostgreSQL Connection
+    # Hỗ trợ cả Direct Connection (Port 5432) lẫn Session Pooler (Port 5432) hoặc Transaction Pooler (Port 6543)
+    url: jdbc:postgresql://${SUPABASE_DB_HOST:db.YOUR_PROJECT_REF.supabase.co}:${SUPABASE_DB_PORT:5432}/${SUPABASE_DB_NAME:postgres}?sslmode=require
+    driver-class-name: org.postgresql.Driver
+    username: ${SUPABASE_DB_USER:postgres}
+    password: ${SUPABASE_DB_PASSWORD:YOUR_SUPABASE_DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      idle-timeout: 300000
+      connection-timeout: 20000
+      max-lifetime: 1200000
+      pool-name: SupabaseHikariCP
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          batch_size: 50
+          order_inserts: true
+          order_updates: true
+  flyway:
+    enabled: false # Vì bạn đã khởi tạo schema trực tiếp trên Supabase SQL Editor
+
+logging:
+  level:
+    com.smartcrm: INFO

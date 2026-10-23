@@ -1,0 +1,96 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: smartcrm-backend
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+  jpa:
+    open-in-view: false
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        generate_statistics: false
+  datasource:
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      idle-timeout: 300000
+      connection-timeout: 20000
+      max-lifetime: 1200000
+      pool-name: SmartCrmHikariCP
+  task:
+    execution:
+      pool:
+        core-size: 5
+        max-size: 20
+        queue-capacity: 200
+        keep-alive: 60s
+      thread-name-prefix: SmartCrm-Async-
+  cache:
+    type: ${CACHE_TYPE:simple}
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    listener:
+      simple:
+        concurrency: 2
+        max-concurrency: 5
+        prefetch: 1
+        acknowledge-mode: auto
+        default-requeue-rejected: false
+        retry:
+          enabled: true
+          initial-interval: 2000ms
+          max-attempts: 3
+          multiplier: 2.0
+          max-interval: 10000ms
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 16
+          max-idle: 8
+          min-idle: 2
+          max-wait: 1000ms
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:SmartCRMSecretKeyForJwtTokenGenerationMustBeAtLeast256BitsLong2026!}
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+  cache:
+    metrics-ttl-seconds: 300
+    summaries-ttl-seconds: 600
+    users-ttl-seconds: 900
+  reports:
+    storage-dir: ${REPORT_STORAGE_DIR:./storage/reports}
+    expiration-hours: ${REPORT_EXPIRATION_HOURS:24}
+    max-concurrent-jobs-per-user: 3
+    timeout-minutes: 15
+    queue-name: smartcrm.report.queue
+    exchange-name: smartcrm.report.exchange
+    routing-key: smartcrm.report.routingKey
+    dlq-name: smartcrm.report.dlq
+    dlx-name: smartcrm.report.dlx
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: method
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
